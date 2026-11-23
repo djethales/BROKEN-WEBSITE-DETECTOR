@@ -1,0 +1,122 @@
+[
+  {
+    "id": "IGNORE_TRACKERS",
+    "description": "Bruit des traceurs et régies publicitaires.",
+    "source": "*",
+    "urlMatch": "googletagmanager|google-analytics|facebook\\.net|hotjar|doubleclick",
+    "verdict": "IGNORE"
+  },
+  {
+    "id": "IGNORE_FAVICON",
+    "description": "Échec de favicon, sans impact sur l'affichage.",
+    "source": "network",
+    "urlMatch": "favicon",
+    "verdict": "IGNORE"
+  },
+  {
+    "id": "IGNORE_DEPRECATION",
+    "description": "Avertissements de dépréciation.",
+    "source": "console",
+    "textMatch": "deprecat",
+    "verdict": "IGNORE"
+  },
+  {
+    "id": "CSS_FAILED",
+    "description": "Feuille de style en échec ou en erreur HTTP.",
+    "source": "network",
+    "resourceType": "stylesheet",
+    "statusMatch": "^[45]|failed",
+    "verdict": "BROKEN",
+    "incidentType": "CSS_FAILED"
+  },
+  {
+    "id": "JS_FAILED_FIRST_PARTY",
+    "description": "Script du site en échec ou en erreur HTTP.",
+    "source": "network",
+    "resourceType": "script",
+    "statusMatch": "^[45]|failed",
+    "firstPartyOnly": true,
+    "verdict": "BROKEN",
+    "incidentType": "JS_FAILED"
+  },
+  {
+    "id": "JS_FAILED_CRITICAL_CDN",
+    "description": "CDN de script critique indisponible.",
+    "source": "network",
+    "resourceType": "script",
+    "urlMatch": "cdnjs\\.cloudflare\\.com|cdn\\.jsdelivr\\.net|unpkg\\.com|ajax\\.googleapis\\.com",
+    "statusMatch": "^[45]|failed",
+    "verdict": "BROKEN",
+    "incidentType": "JS_FAILED"
+  },
+  {
+    "id": "CHUNK_ERROR",
+    "description": "Échec de chargement d'un chunk JavaScript.",
+    "source": "pageerror",
+    "textMatch": "ChunkLoadError|Loading chunk .* failed",
+    "verdict": "BROKEN",
+    "incidentType": "JS_ERROR"
+  },
+  {
+    "id": "SYNTAX_ERROR",
+    "description": "Erreur de syntaxe JavaScript.",
+    "source": "pageerror",
+    "textMatch": "SyntaxError",
+    "verdict": "BROKEN",
+    "incidentType": "JS_ERROR"
+  },
+  {
+    "id": "HYDRATION_FAILED",
+    "description": "Échec d'hydratation.",
+    "source": "console",
+    "textMatch": "Hydration failed|hydrat.* mismatch",
+    "verdict": "BROKEN",
+    "incidentType": "JS_ERROR"
+  },
+  {
+    "id": "CSS_MIME",
+    "description": "Feuille de style refusée à cause de son type MIME.",
+    "source": "console",
+    "textMatch": "MIME type .* stylesheet",
+    "verdict": "BROKEN",
+    "incidentType": "CSS_FAILED"
+  },
+  {
+    "id": "BLANK_PAGE",
+    "description": "Texte visible trop court : page blanche ou quasi vide.",
+    "source": "dom",
+    "domCheck": "visibleTextTooShort",
+    "verdict": "BROKEN",
+    "incidentType": "BLANK_PAGE"
+  },
+  {
+    "id": "CSS_DECLARED_BUT_EMPTY",
+    "description": "Feuille de style same-origin servie mais sans aucune règle.",
+    "source": "dom",
+    "domCheck": "stylesheetsDeclaredButEmpty",
+    "verdict": "DOUBTFUL"
+  },
+  {
+    "id": "UNCAUGHT_ERROR",
+    "description": "Exception JavaScript non classée.",
+    "source": "pageerror",
+    "verdict": "DOUBTFUL"
+  },
+  {
+    "id": "MANY_IMAGES_FAILED",
+    "description": "Beaucoup d'images en échec.",
+    "source": "network",
+    "resourceType": "image",
+    "statusMatch": "^[45]|failed",
+    "minCount": 5,
+    "verdict": "DOUBTFUL"
+  },
+  {
+    "id": "FONT_FAILED",
+    "description": "Police en échec.",
+    "source": "network",
+    "resourceType": "font",
+    "statusMatch": "^[45]|failed",
+    "verdict": "DOUBTFUL"
+  }
+]

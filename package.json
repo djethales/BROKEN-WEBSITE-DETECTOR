@@ -1,0 +1,58 @@
+{
+  "name": "broken-website-detector",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Détection de sites clients cassés par analyse des logs navigateur.",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "start:api": "node dist/main.api.js",
+    "start:worker": "node dist/main.worker.js",
+    "start:api:dev": "tsx watch src/main.api.ts",
+    "start:worker:dev": "tsx watch src/main.worker.ts",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate deploy",
+    "test": "jest --runInBand --passWithNoTests",
+    "test:unit": "jest --runInBand --testPathPattern=test/unit",
+    "test:integration": "jest --runInBand --testPathPattern=test/integration",
+    "fixtures": "tsx test/fixtures/server.ts"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "1.6.0",
+    "@nestjs/bullmq": "12.0.0",
+    "@nestjs/common": "12.3.3",
+    "@nestjs/config": "12.1.0",
+    "@nestjs/core": "12.3.3",
+    "@nestjs/platform-express": "12.3.3",
+    "@nestjs/schedule": "12.0.2",
+    "@nestjs/swagger": "12.1.0",
+    "@prisma/client": "6.19.3",
+    "bullmq": "5.66.4",
+    "class-transformer": "0.5.1",
+    "class-validator": "0.15.1",
+    "dotenv": "16.6.1",
+    "ioredis": "5.8.2",
+    "nestjs-pino": "4.4.1",
+    "pino": "9.14.0",
+    "pino-http": "10.5.0",
+    "playwright": "1.65.0",
+    "prisma": "6.19.3",
+    "reflect-metadata": "0.2.2",
+    "rxjs": "7.8.2",
+    "tldts": "7.4.19",
+    "zod": "3.25.76"
+  },
+  "devDependencies": {
+    "@types/express": "5.0.3",
+    "@types/jest": "29.5.14",
+    "@types/node": "22.19.0",
+    "@types/supertest": "6.0.3",
+    "jest": "29.7.0",
+    "supertest": "7.1.4",
+    "ts-jest": "29.4.5",
+    "tsx": "4.20.6",
+    "typescript": "5.9.3"
+  }
+}

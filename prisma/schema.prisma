@@ -1,0 +1,138 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum SiteState {
+  HEALTHY
+  BROKEN
+  DOUBTFUL
+  BLOCKED
+  MAINTENANCE
+  UNKNOWN
+}
+
+enum Verdict {
+  HEALTHY
+  BROKEN
+  DOUBTFUL
+  BLOCKED
+}
+
+enum VerdictSource {
+  RULES
+  JUDGE
+}
+
+enum IncidentType {
+  HTTP_ERROR
+  UNREACHABLE
+  CSS_FAILED
+  JS_FAILED
+  JS_ERROR
+  BLANK_PAGE
+  OTHER
+}
+
+model Site {
+  id                   String     @id @default(cuid())
+  externalId           String     @unique
+  name                 String
+  url                  String
+  clientName           String?
+  sourceStatus         String
+  metadata             Json       @default("{}")
+  monitoringEnabled    Boolean    @default(true)
+  criticality          Int        @default(0)
+  alertEmails          String[]   @default([])
+  currentState         SiteState  @default(UNKNOWN)
+  stateSince           DateTime   @default(now())
+  stateReason          String?
+  consecutiveFailures  Int        @default(0)
+  noiseCalibratedAt    DateTime?
+  lastCheckedAt        DateTime?
+  nextCheckAt          DateTime   @default(now())
+  createdAt            DateTime   @default(now())
+  updatedAt            DateTime   @updatedAt
+  checks               Check[]
+  incidents            Incident[]
+  noise                KnownNoise[]
+
+  @@index([nextCheckAt, monitoringEnabled])
+}
+
+model KnownNoise {
+  id          String   @id @default(cuid())
+  siteId      String
+  signature   String
+  source      String
+  sampleText  String
+  seenCount   Int      @default(1)
+  firstSeenAt DateTime @default(now())
+  isActive    Boolean  @default(true)
+  site        Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
+
+  @@unique([siteId, signature])
+  @@index([siteId, isActive])
+}
+
+model Check {
+  id               String         @id @default(cuid())
+  siteId           String
+  viewport         String
+  startedAt        DateTime       @default(now())
+  durationMs       Int
+  navigation       Json
+  entries          Json
+  dom              Json
+  matchedRules     Json           @default("[]")
+  verdict          Verdict?
+  verdictSource    VerdictSource?
+  incidentType     IncidentType?
+  reason           String?
+  judgeSuggestion  Json?
+  site             Site           @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  firstIncidents   Incident[]     @relation("IncidentFirstCheck")
+  lastIncidents    Incident[]     @relation("IncidentLastCheck")
+
+  @@index([siteId, startedAt])
+}
+
+model Incident {
+  id                 String       @id @default(cuid())
+  siteId             String
+  type               IncidentType
+  openedAt           DateTime     @default(now())
+  resolvedAt         DateTime?
+  firstCheckId       String
+  lastCheckId        String
+  notifiedOpenAt     DateTime?
+  notifiedResolvedAt DateTime?
+  site               Site         @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  firstCheck         Check        @relation("IncidentFirstCheck", fields: [firstCheckId], references: [id])
+  lastCheck          Check        @relation("IncidentLastCheck", fields: [lastCheckId], references: [id])
+
+  @@index([siteId, resolvedAt])
+}
+
+model JudgeUsage {
+  id           String @id @default(cuid())
+  date         String @unique
+  calls        Int    @default(0)
+  inputTokens  Int    @default(0)
+  outputTokens Int    @default(0)
+}
+
+model CycleRun {
+  id          String    @id @default(cuid())
+  kind        String
+  startedAt   DateTime  @default(now())
+  finishedAt  DateTime?
+  sitesQueued Int       @default(0)
+
+  @@index([kind, startedAt])
+}
